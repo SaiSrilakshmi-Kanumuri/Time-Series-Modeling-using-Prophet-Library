@@ -22,24 +22,18 @@ aggr_train = train[,list(Count = sum(Count)), by = Date]
 # Visualize the data
 ggplot(aggr_train) + geom_line(aes(Date, Count))
 
-```{r}
 # Change column names
 names(aggr_train) = c("ds", "y")
-```
 
-```{r}
+
 # Model building
 m = prophet(aggr_train)
 future = make_future_dataframe(m, periods = 213)
 forecast = predict(m, future)
-```
 
-```{r}
 # Visualize forecast
 plot(m, forecast)
-```
 
-```{r}
 # proportion of mean hourly 'Count' based on train data
 mean_hourly_count = train %>%
   group_by(hour = hour(train$Datetime)) %>%
@@ -47,16 +41,14 @@ mean_hourly_count = train %>%
 
 s = sum(mean_hourly_count$mean_count)
 mean_hourly_count$count_proportion = mean_hourly_count$mean_count/s
-```
 
-```{r}
 # variable to store hourly Count
 test_count = NULL
 
 for(i in 763:nrow(forecast)){
   test_count = append(test_count, mean_hourly_count$count_proportion * forecast$yhat[i])
 }
-```
+
 
 
 
